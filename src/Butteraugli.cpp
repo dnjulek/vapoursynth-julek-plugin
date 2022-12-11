@@ -176,6 +176,35 @@ void VS_CC butteraugliCreate(const VSMap* in, VSMap* out, void* userData, VSCore
 	d->ba_params.xmul = 1.0f;
 	d->ba_params.intensity_target = intensity_target;
 
+	if (intensity_target <= 0.0f) {
+		vsapi->mapSetError(out, "Butteraugli: intensity_target must be greater than 0.0.");
+		vsapi->freeNode(d->node);
+		vsapi->freeNode(d->node2);
+		return;
+	}
+
+	if (d->vi->format.colorFamily != cfRGB) {
+		vsapi->mapSetError(out, "Butteraugli: the clip must be in RGB format.");
+		vsapi->freeNode(d->node);
+		vsapi->freeNode(d->node2);
+		return;
+	}
+
+	int bits = d->vi->format.bitsPerSample;
+	if (bits != 8 && bits != 16 && bits != 32) {
+		vsapi->mapSetError(out, "Butteraugli: the clip bit depth must be 8, 16, or 32.");
+		vsapi->freeNode(d->node);
+		vsapi->freeNode(d->node2);
+		return;
+	}
+
+	if (!vsh::isSameVideoInfo(vsapi->getVideoInfo(d->node2), d->vi)) {
+		vsapi->mapSetError(out, "Butteraugli: both clips must have the same format and dimensions.");
+		vsapi->freeNode(d->node);
+		vsapi->freeNode(d->node2);
+		return;
+	}
+
 	switch (d->vi->format.bytesPerSample) {
 	case 1:
 		d->fill = (d->linput) ? fill_image<uint8_t, jxl::Image3B, true> : fill_image<uint8_t, jxl::Image3B, false>;
