@@ -1,0 +1,3 @@
+[submodule "thirdparty/libjxl"]
+	path = thirdparty/libjxl
+	url = https://github.com/libjxl/libjxl
