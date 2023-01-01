@@ -58,7 +58,7 @@ cmake --install build
 
 cd ../..
 
-cmake -B build -DCMAKE_BUILD_TYPE=Release -G Ninja
+cmake -B build -DCMAKE_BUILD_TYPE=Release -DVS_INCLUDE_DIR="C:/Program Files/VapourSynth/sdk/include/vapoursynth" -G Ninja
 
 cmake --build build
 ```
