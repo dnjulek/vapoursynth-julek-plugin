@@ -2,18 +2,17 @@ cmake_minimum_required(VERSION 3.20.0)
 
 project(libjulek LANGUAGES CXX)
 
-add_library(julek SHARED
-    src/shared.cpp
-    src/Butteraugli.cpp
-    src/RFS.cpp
-    src/ssimulacra.cpp
+add_library(julek SHARED 
+	src/shared.cpp
+	src/Butteraugli.cpp
+	src/RFS.cpp src/ssimulacra.cpp
 	thirdparty/libjxl/tools/ssimulacra.cc
 	thirdparty/libjxl/tools/ssimulacra2.cc
 )
 
 target_include_directories(julek PRIVATE
-    thirdparty/libjxl
-    thirdparty/libjxl/jxl_install/include
+	thirdparty/libjxl
+	thirdparty/libjxl/jxl_install/include
 )
 
 set_target_properties(julek PROPERTIES
@@ -25,7 +24,7 @@ set_target_properties(julek PROPERTIES
 find_library(libjxl NAMES
 	jxl
 	jxl-static
-    PATHS ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/libjxl/jxl_install/lib
+	PATHS ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/libjxl/jxl_install/lib
 )
 
 message(STATUS "julek: find_library returned ${libjxl}")
