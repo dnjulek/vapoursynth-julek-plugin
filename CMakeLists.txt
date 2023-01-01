@@ -25,13 +25,15 @@ find_library(libjxl NAMES
 	jxl
 	jxl-static
 	PATHS ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/libjxl/jxl_install/lib
+	NO_DEFAULT_PATH
 )
 
 message(STATUS "julek: find_library returned ${libjxl}")
 
-find_library(libhwy NAMES 
-	hwy 
+find_library(libhwy NAMES
+	hwy
 	PATHS ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/libjxl/jxl_install/lib
+	NO_DEFAULT_PATH
 )
 
 message(STATUS "julek: find_library returned ${libhwy}")
