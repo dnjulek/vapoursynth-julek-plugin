@@ -1,11 +1,13 @@
-cmake_minimum_required(VERSION 3.20.0)
+cmake_minimum_required(VERSION 3.23)
 
 project(libjulek LANGUAGES CXX)
 
-add_library(julek SHARED 
-	src/shared.cpp
+add_library(julek SHARED
+	src/AGM.cpp
 	src/Butteraugli.cpp
-	src/RFS.cpp src/ssimulacra.cpp
+	src/RFS.cpp
+	src/shared.cpp
+	src/ssimulacra.cpp
 	thirdparty/libjxl/tools/ssimulacra.cc
 	thirdparty/libjxl/tools/ssimulacra2.cc
 )
@@ -42,6 +44,25 @@ target_link_libraries(julek PRIVATE
     ${libjxl}
     ${libhwy}
 )
+
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "AMD64")
+	message(STATUS "julek: ${CMAKE_SYSTEM_PROCESSOR} processor detected, using vectorclass")
+	target_compile_definitions(julek PRIVATE PLUGIN_X86)
+	target_include_directories(julek PRIVATE thirdparty/vectorclass)
+	target_sources(julek PRIVATE
+		thirdparty/vectorclass/instrset_detect.cpp
+		src/AVX2/AGM_AVX2.cpp
+	)
+	
+	if(MSVC)
+		set_source_files_properties(src/AVX2/AGM_AVX2.cpp PROPERTIES COMPILE_OPTIONS "/arch:AVX2")
+	else()
+		set_source_files_properties(src/AVX2/AGM_AVX2.cpp PROPERTIES COMPILE_OPTIONS "-mavx2 -mfma")
+	endif()
+	
+else()
+	message(STATUS "julek: ${CMAKE_SYSTEM_PROCESSOR} processor detected, unable to use vectorclass")
+endif()
 
 find_package(PkgConfig QUIET MODULE)
 
@@ -90,3 +111,5 @@ else()
 endif()
 
 configure_file(src/config.h.in config.h)
+
+include_directories(${CMAKE_CURRENT_BINARY_DIR})

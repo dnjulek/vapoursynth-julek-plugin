@@ -1,2 +1,5 @@
+/build
 /msvc_project
+/thirdparty/libjxl/build
+/thirdparty/libjxl/jxl_install
 .vscode

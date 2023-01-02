@@ -1,18 +1,6 @@
-vapoursynth-julek-plugin is a collection of some already known filters and some new ones that I am implementing here to have more performance.\
-Please visit the [wiki](https://github.com/dnjulek/vapoursynth-julek-plugin/wiki) for more details.
+vapoursynth-julek-plugin is a collection of some new filters and some already known ones that I am implementing here to have more performance.
 
-- Butteraugli ([wiki](https://github.com/dnjulek/vapoursynth-julek-plugin/wiki/Butteraugli))
-```python
-core.julek.Butteraugli(vnode reference, vnode distorted [, bool distmap=False, float intensity_target=80.0, bool linput=False])
-```
-- RFS ([wiki](https://github.com/dnjulek/vapoursynth-julek-plugin/wiki/RFS))
-```python
-core.julek.RFS(vnode clip_a, vnode clip_b, int[] frames [, bool mismatch=False])
-```
-- SSIMULACRA ([wiki](https://github.com/dnjulek/vapoursynth-julek-plugin/wiki/SSIMULACRA))
-```python
-core.julek.SSIMULACRA(vnode reference, vnode distorted [, int feature=0, bool simple=False])
-```
+Please visit the [wiki](https://github.com/dnjulek/vapoursynth-julek-plugin/wiki) for more details.
 
 ### Building:
 
@@ -20,7 +8,7 @@ core.julek.SSIMULACRA(vnode reference, vnode distorted [, int feature=0, bool si
 Requirements:
     - Git
     - C++17 compiler
-    - CMake >= 3.20.0
+    - CMake >= 3.23
 ```
 ### Linux:
 ```
@@ -36,7 +24,7 @@ cmake --install build
 
 cd ../..
 
-cmake -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang -B build -DCMAKE_BUILD_TYPE=Release -G Ninja
+cmake -DCMAKE_CXX_COMPILER=clang++ -B build -DCMAKE_BUILD_TYPE=Release -G Ninja
 
 cmake --build build
 
