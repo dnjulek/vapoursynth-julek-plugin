@@ -18,9 +18,9 @@ target_include_directories(julek PRIVATE
 )
 
 set_target_properties(julek PROPERTIES
-    CXX_EXTENSIONS OFF
-    CXX_STANDARD 17
-    CXX_STANDARD_REQUIRED ON
+	CXX_EXTENSIONS OFF
+	CXX_STANDARD 17
+	CXX_STANDARD_REQUIRED ON
 )
 
 find_library(libjxl NAMES
@@ -41,8 +41,8 @@ find_library(libhwy NAMES
 message(STATUS "julek: find_library returned ${libhwy}")
 
 target_link_libraries(julek PRIVATE
-    ${libjxl}
-    ${libhwy}
+	${libjxl}
+	${libhwy}
 )
 
 if((CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64") OR (CMAKE_SYSTEM_PROCESSOR MATCHES "AMD64"))
@@ -67,47 +67,47 @@ endif()
 find_package(PkgConfig QUIET MODULE)
 
 if(PKG_CONFIG_FOUND)
-    pkg_search_module(VS vapoursynth)
+	pkg_search_module(VS vapoursynth)
 
-    if(VS_FOUND)
-        message(STATUS "Found VapourSynth r${VS_VERSION}")
+	if(VS_FOUND)
+		message(STATUS "Found VapourSynth r${VS_VERSION}")
 
-        cmake_path(APPEND install_dir ${VS_LIBDIR} vapoursynth)
-        target_include_directories(julek PRIVATE ${VS_INCLUDE_DIRS})
+		cmake_path(APPEND install_dir ${VS_LIBDIR} vapoursynth)
+		target_include_directories(julek PRIVATE ${VS_INCLUDE_DIRS})
 
-        install(TARGETS julek LIBRARY DESTINATION ${install_dir})
-    endif()
+		install(TARGETS julek LIBRARY DESTINATION ${install_dir})
+	endif()
 endif()
 
 if(NOT VS_FOUND)
-    set(VS_INCLUDE_DIR "" CACHE PATH "Path to VapourSynth headers")
+	set(VS_INCLUDE_DIR "" CACHE PATH "Path to VapourSynth headers")
 
-    if(VS_INCLUDE_DIR EQUAL "")
-        message(WARNING "VapourSynth not found")
-    endif()
+	if(VS_INCLUDE_DIR EQUAL "")
+		message(WARNING "VapourSynth not found")
+	endif()
 
-    target_include_directories(julek PRIVATE ${VS_INCLUDE_DIR})
+	target_include_directories(julek PRIVATE ${VS_INCLUDE_DIR})
 
-    install(TARGETS julek LIBRARY RUNTIME)
+	install(TARGETS julek LIBRARY RUNTIME)
 endif()
 
 find_package(Git QUIET)
 if(GIT_FOUND)
-    execute_process(
-        COMMAND ${GIT_EXECUTABLE} describe --tags --long --always
-        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
-        OUTPUT_VARIABLE VCS_TAG
-    )
-    if(VCS_TAG)
-        string(STRIP ${VCS_TAG} VCS_TAG)
-    endif()
+	execute_process(
+		COMMAND ${GIT_EXECUTABLE} describe --tags --long --always
+		WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+		OUTPUT_VARIABLE VCS_TAG
+	)
+	if(VCS_TAG)
+		string(STRIP ${VCS_TAG} VCS_TAG)
+	endif()
 endif()
 
 if(VCS_TAG)
-    message(STATUS "vapoursynth-julek-plugin ${VCS_TAG}")
+	message(STATUS "vapoursynth-julek-plugin ${VCS_TAG}")
 else()
-    message(WARNING "unknown plugin version")
-    set(VCS_TAG "unknown")
+	message(WARNING "unknown plugin version")
+	set(VCS_TAG "unknown")
 endif()
 
 configure_file(src/config.h.in config.h)
