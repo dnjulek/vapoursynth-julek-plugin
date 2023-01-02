@@ -57,7 +57,7 @@ if((CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64") OR (CMAKE_SYSTEM_PROCESSOR MATCHES 
 	if(MSVC)
 		set_source_files_properties(src/AVX2/AGM_AVX2.cpp PROPERTIES COMPILE_OPTIONS "/arch:AVX2")
 	else()
-		set_source_files_properties(src/AVX2/AGM_AVX2.cpp PROPERTIES COMPILE_OPTIONS "-mavx2 -mfma")
+		set_source_files_properties(src/AVX2/AGM_AVX2.cpp PROPERTIES COMPILE_OPTIONS "-mavx2;-mfma")
 	endif()
 	
 else()
