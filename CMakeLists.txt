@@ -45,7 +45,7 @@ target_link_libraries(julek PRIVATE
     ${libhwy}
 )
 
-if(CMAKE_SYSTEM_PROCESSOR MATCHES "AMD64")
+if((CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64") OR (CMAKE_SYSTEM_PROCESSOR MATCHES "AMD64"))
 	message(STATUS "julek: ${CMAKE_SYSTEM_PROCESSOR} processor detected, using vectorclass")
 	target_compile_definitions(julek PRIVATE PLUGIN_X86)
 	target_include_directories(julek PRIVATE thirdparty/vectorclass)
