@@ -16,7 +16,7 @@ git clone --recurse-submodules https://github.com/dnjulek/vapoursynth-julek-plug
 
 cd vapoursynth-julek-plugin/thirdparty/libjxl
 
-cmake -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang -B build -DCMAKE_INSTALL_PREFIX=jxl_install -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF -DJPEGXL_ENABLE_FUZZERS=OFF -DJPEGXL_ENABLE_TOOLS=OFF -DJPEGXL_ENABLE_MANPAGES=OFF -DJPEGXL_ENABLE_BENCHMARK=OFF -DJPEGXL_ENABLE_EXAMPLES=OFF -DJPEGXL_ENABLE_JNI=OFF -DJPEGXL_ENABLE_OPENEXR=OFF -DJPEGXL_ENABLE_TCMALLOC=OFF -DBUILD_SHARED_LIBS=OFF -DJPEGXL_ENABLE_SJPEG=OFF -G Ninja
+cmake -B build -C ../libjxl_cache.cmake -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang -G Ninja
 
 cmake --build build
 
@@ -28,7 +28,7 @@ cmake -DCMAKE_CXX_COMPILER=clang++ -B build -DCMAKE_BUILD_TYPE=Release -G Ninja
 
 cmake --build build
 
-cmake --install build
+sudo cmake --install build
 ```
 
 I recommend compiling with clang or you may have problems with libjxl, if you want to try compiling with gcc you may need to add this to the second cmake command:\
@@ -38,7 +38,7 @@ Open the ``Visual Studio 2022 Developer PowerShell`` and use cd to the folder yo
 ```
 cd vapoursynth-julek-plugin/thirdparty/libjxl
 
-cmake -B build -DCMAKE_INSTALL_PREFIX=jxl_install -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF -DJPEGXL_ENABLE_FUZZERS=OFF -DJPEGXL_ENABLE_TOOLS=OFF -DJPEGXL_ENABLE_MANPAGES=OFF -DJPEGXL_ENABLE_BENCHMARK=OFF -DJPEGXL_ENABLE_EXAMPLES=OFF -DJPEGXL_ENABLE_JNI=OFF -DJPEGXL_ENABLE_OPENEXR=OFF -DJPEGXL_ENABLE_TCMALLOC=OFF -DBUILD_SHARED_LIBS=OFF -DJPEGXL_ENABLE_SJPEG=OFF -G Ninja
+cmake -B build -C ../libjxl_cache.cmake -G Ninja
 
 cmake --build build
 

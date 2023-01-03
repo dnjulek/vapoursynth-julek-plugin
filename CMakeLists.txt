@@ -14,7 +14,7 @@ add_library(julek SHARED
 
 target_include_directories(julek PRIVATE
 	thirdparty/libjxl
-	thirdparty/libjxl/jxl_install/include
+	thirdparty/libjxl/install/include
 )
 
 set_target_properties(julek PROPERTIES
@@ -26,7 +26,7 @@ set_target_properties(julek PROPERTIES
 find_library(libjxl NAMES
 	jxl
 	jxl-static
-	PATHS ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/libjxl/jxl_install/lib
+	PATHS ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/libjxl/install/lib
 	NO_DEFAULT_PATH
 )
 
@@ -34,7 +34,7 @@ message(STATUS "julek: find_library returned ${libjxl}")
 
 find_library(libhwy NAMES
 	hwy
-	PATHS ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/libjxl/jxl_install/lib
+	PATHS ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/libjxl/install/lib
 	NO_DEFAULT_PATH
 )
 
