@@ -1,4 +1,4 @@
-set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/install" CACHE PATH "Install path prefix.")
+set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/install" CACHE PATH "Install path prefix.")
 set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build.")
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries.")
 set(BUILD_TESTING OFF CACHE BOOL "Build the testing tree.")

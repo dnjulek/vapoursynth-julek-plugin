@@ -14,13 +14,15 @@ Requirements:
 ```
 git clone --recurse-submodules https://github.com/dnjulek/vapoursynth-julek-plugin
 
-cd vapoursynth-julek-plugin/thirdparty/libjxl
+cd vapoursynth-julek-plugin/thirdparty
 
-cmake -B build -C ../libjxl_cache.cmake -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang -G Ninja
+mkdir libjxl_build
+cd libjxl_build
 
-cmake --build build
+cmake -C ../libjxl_cache.cmake -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang -G Ninja ../libjxl
 
-cmake --install build
+cmake --build .
+cmake --install .
 
 cd ../..
 
@@ -36,13 +38,15 @@ I recommend compiling with clang or you may have problems with libjxl, if you wa
 ### Windows:
 Open the ``Visual Studio 2022 Developer PowerShell`` and use cd to the folder you downloaded the repository.
 ```
-cd vapoursynth-julek-plugin/thirdparty/libjxl
+cd vapoursynth-julek-plugin/thirdparty
 
-cmake -B build -C ../libjxl_cache.cmake -G Ninja
+mkdir libjxl_build
+cd libjxl_build
 
-cmake --build build
+cmake -C ../libjxl_cache.cmake -G Ninja ../libjxl
 
-cmake --install build
+cmake --build .
+cmake --install .
 
 cd ../..
 
