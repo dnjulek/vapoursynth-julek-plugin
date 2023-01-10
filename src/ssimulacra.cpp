@@ -7,52 +7,13 @@ struct SSIMULACRAData final {
 	bool simple;
 	int feature;
 
-	void (*fill)(jxl::CodecInOut& ref, jxl::CodecInOut& dist, const VSFrame* src1, const VSFrame* src2, int width, int height, const ptrdiff_t stride, const SSIMULACRAData* const VS_RESTRICT d, const VSAPI* vsapi) noexcept;
+	void (*fill)(jxl::CodecInOut& ref, jxl::CodecInOut& dist, const VSFrame* src1, const VSFrame* src2, int width, int height, const ptrdiff_t stride, const VSAPI* vsapi) noexcept;
 };
 
-template <typename pixel_t, typename jxl_t>
-void fill_image(jxl::CodecInOut& ref, jxl::CodecInOut& dist, const VSFrame* src1, const VSFrame* src2, int width, int height, const ptrdiff_t stride, const SSIMULACRAData* const VS_RESTRICT d, const VSAPI* vsapi) noexcept {
-	jxl_t tmp1(width, height);
-	jxl_t tmp2(width, height);
 
-	for (int i{ 0 }; i < 3; i++) {
-		auto srcp1{ reinterpret_cast<const pixel_t*>(vsapi->getReadPtr(src1, i)) };
-		auto srcp2{ reinterpret_cast<const pixel_t*>(vsapi->getReadPtr(src2, i)) };
+template <typename pixel_t, typename jxl_t, bool linput> extern void fill_image(jxl::CodecInOut& ref, jxl::CodecInOut& dist, const VSFrame* src1, const VSFrame* src2, int width, int height, const ptrdiff_t stride, const VSAPI* vsapi) noexcept;
+template <bool linput> extern void fill_imageF(jxl::CodecInOut& ref, jxl::CodecInOut& dist, const VSFrame* src1, const VSFrame* src2, int width, int height, const ptrdiff_t stride, const VSAPI* vsapi) noexcept;
 
-		for (int y{ 0 }; y < height; y++) {
-			memcpy(tmp1.PlaneRow(i, y), srcp1, width * sizeof(pixel_t));
-			memcpy(tmp2.PlaneRow(i, y), srcp2, width * sizeof(pixel_t));
-
-			srcp1 += stride;
-			srcp2 += stride;
-		}
-	}
-
-	ref.SetFromImage(std::move(jxl::ConvertToFloat(tmp1)), jxl::ColorEncoding::SRGB(false));
-	dist.SetFromImage(std::move(jxl::ConvertToFloat(tmp2)), jxl::ColorEncoding::SRGB(false));
-}
-
-
-void fill_imageF(jxl::CodecInOut& ref, jxl::CodecInOut& dist, const VSFrame* src1, const VSFrame* src2, int width, int height, const ptrdiff_t stride, const SSIMULACRAData* const VS_RESTRICT d, const VSAPI* vsapi) noexcept {
-	jxl::Image3F tmp1(width, height);
-	jxl::Image3F tmp2(width, height);
-
-	for (int i{ 0 }; i < 3; i++) {
-		const float* srcp1{ reinterpret_cast<const float*>(vsapi->getReadPtr(src1, i)) };
-		const float* srcp2{ reinterpret_cast<const float*>(vsapi->getReadPtr(src2, i)) };
-
-		for (int y = 0; y < height; y++) {
-			memcpy(tmp1.PlaneRow(i, y), srcp1, width * sizeof(float));
-			memcpy(tmp2.PlaneRow(i, y), srcp2, width * sizeof(float));
-
-			srcp1 += stride;
-			srcp2 += stride;
-		}
-	}
-
-	ref.SetFromImage(std::move(tmp1), jxl::ColorEncoding::SRGB(false));
-	dist.SetFromImage(std::move(tmp2), jxl::ColorEncoding::SRGB(false));
-}
 
 static const VSFrame* VS_CC ssimulacraGetFrame(int n, int activationReason, void* instanceData, void** frameData, VSFrameContext* frameCtx, VSCore* core, const VSAPI* vsapi) {
 	auto d{ static_cast<SSIMULACRAData*>(instanceData) };
@@ -76,7 +37,7 @@ static const VSFrame* VS_CC ssimulacraGetFrame(int n, int activationReason, void
 		ref.SetSize(width, height);
 		dist.SetSize(width, height);
 
-		d->fill(ref, dist, src, src2, width, height, stride, d, vsapi);
+		d->fill(ref, dist, src, src2, width, height, stride, vsapi);
 
 		VSFrame* dst = vsapi->copyFrame(src2, core);
 		VSMap* dstProps = vsapi->getFramePropertiesRW(dst);
@@ -163,13 +124,13 @@ void VS_CC ssimulacraCreate(const VSMap* in, VSMap* out, void* userData, VSCore*
 
 	switch (d->vi->format.bytesPerSample) {
 	case 1:
-		d->fill = fill_image<uint8_t, jxl::Image3B>;
+		d->fill = fill_image<uint8_t, jxl::Image3B, false>;
 		break;
 	case 2:
-		d->fill = fill_image<uint16_t, jxl::Image3U>;
+		d->fill = fill_image<uint16_t, jxl::Image3U, false>;
 		break;
 	case 4:
-		d->fill = fill_imageF;
+		d->fill = fill_imageF<false>;
 		break;
 	}
 

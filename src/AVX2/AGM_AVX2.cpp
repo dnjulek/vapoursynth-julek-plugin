@@ -51,7 +51,7 @@ FORCE_INLINE void get_mask_avx2_f(const float* VS_RESTRICT srcp, float* VS_RESTR
 }
 
 template <typename pixel_t>
-void process_avx2(const VSFrame* src, VSFrame* dst, float& avg, const AGMData* const VS_RESTRICT d, const VSAPI* vsapi) noexcept {
+void agm_process_avx2(const VSFrame* src, VSFrame* dst, float& avg, const AGMData* const VS_RESTRICT d, const VSAPI* vsapi) noexcept {
 	for (int plane{ 0 }; plane < d->vi->format.numPlanes; plane++) {
 		const auto width{ vsapi->getFrameWidth(src, plane) };
 		const auto height{ vsapi->getFrameHeight(src, plane) };
@@ -73,7 +73,7 @@ void process_avx2(const VSFrame* src, VSFrame* dst, float& avg, const AGMData* c
 	}
 }
 
-template void process_avx2<uint8_t>(const VSFrame* src, VSFrame* dst, float& avg, const AGMData* const VS_RESTRICT d, const VSAPI* vsapi) noexcept;
-template void process_avx2<uint16_t>(const VSFrame* src, VSFrame* dst, float& avg, const AGMData* const VS_RESTRICT d, const VSAPI* vsapi) noexcept;
-template void process_avx2<float>(const VSFrame* src, VSFrame* dst, float& avg, const AGMData* const VS_RESTRICT d, const VSAPI* vsapi) noexcept;
+template void agm_process_avx2<uint8_t>(const VSFrame* src, VSFrame* dst, float& avg, const AGMData* const VS_RESTRICT d, const VSAPI* vsapi) noexcept;
+template void agm_process_avx2<uint16_t>(const VSFrame* src, VSFrame* dst, float& avg, const AGMData* const VS_RESTRICT d, const VSAPI* vsapi) noexcept;
+template void agm_process_avx2<float>(const VSFrame* src, VSFrame* dst, float& avg, const AGMData* const VS_RESTRICT d, const VSAPI* vsapi) noexcept;
 #endif

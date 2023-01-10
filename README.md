@@ -26,10 +26,9 @@ cmake --install .
 
 cd ../..
 
-cmake -DCMAKE_CXX_COMPILER=clang++ -B build -DCMAKE_BUILD_TYPE=Release -G Ninja
+cmake -B build -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=Release -G Ninja
 
 cmake --build build
-
 sudo cmake --install build
 ```
 

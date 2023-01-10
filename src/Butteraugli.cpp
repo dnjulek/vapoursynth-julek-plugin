@@ -8,57 +8,17 @@ struct BUTTERAUGLIData final {
 	bool distmap;
 	bool linput;
 
-	void (*hmap)(VSFrame* dst, const jxl::ImageF& distmap, int width, int height, const ptrdiff_t stride, const BUTTERAUGLIData* const VS_RESTRICT d, const VSAPI* vsapi) noexcept;
-	void (*fill)(jxl::CodecInOut& ref, jxl::CodecInOut& dist, const VSFrame* src1, const VSFrame* src2, int width, int height, const ptrdiff_t stride, const BUTTERAUGLIData* const VS_RESTRICT d, const VSAPI* vsapi) noexcept;
+	void (*hmap)(VSFrame* dst, const jxl::ImageF& distmap, int width, int height, const ptrdiff_t stride, const VSAPI* vsapi) noexcept;
+	void (*fill)(jxl::CodecInOut& ref, jxl::CodecInOut& dist, const VSFrame* src1, const VSFrame* src2, int width, int height, const ptrdiff_t stride, const VSAPI* vsapi) noexcept;
 };
 
 
-template <typename pixel_t, typename jxl_t, bool linput>
-void fill_image(jxl::CodecInOut& ref, jxl::CodecInOut& dist, const VSFrame* src1, const VSFrame* src2, int width, int height, const ptrdiff_t stride, const BUTTERAUGLIData* const VS_RESTRICT d, const VSAPI* vsapi) noexcept {
-	jxl_t tmp1(width, height);
-	jxl_t tmp2(width, height);
+template <typename pixel_t, typename jxl_t, bool linput> extern void fill_image(jxl::CodecInOut& ref, jxl::CodecInOut& dist, const VSFrame* src1, const VSFrame* src2, int width, int height, const ptrdiff_t stride, const VSAPI* vsapi) noexcept;
+template <bool linput> extern void fill_imageF(jxl::CodecInOut& ref, jxl::CodecInOut& dist, const VSFrame* src1, const VSFrame* src2, int width, int height, const ptrdiff_t stride, const VSAPI* vsapi) noexcept;
 
-	for (int i = 0; i < 3; ++i) {
-		auto srcp1{ reinterpret_cast<const pixel_t*>(vsapi->getReadPtr(src1, i)) };
-		auto srcp2{ reinterpret_cast<const pixel_t*>(vsapi->getReadPtr(src2, i)) };
-
-		for (int y = 0; y < height; ++y) {
-			memcpy(tmp1.PlaneRow(i, y), srcp1, width * sizeof(pixel_t));
-			memcpy(tmp2.PlaneRow(i, y), srcp2, width * sizeof(pixel_t));
-
-			srcp1 += stride;
-			srcp2 += stride;
-		}
-	}
-
-	ref.SetFromImage(std::move(jxl::ConvertToFloat(tmp1)), (linput) ? jxl::ColorEncoding::LinearSRGB(false) : jxl::ColorEncoding::SRGB(false));
-	dist.SetFromImage(std::move(jxl::ConvertToFloat(tmp2)), (linput) ? jxl::ColorEncoding::LinearSRGB(false) : jxl::ColorEncoding::SRGB(false));
-}
-
-template <bool linput>
-void fill_imageF(jxl::CodecInOut& ref, jxl::CodecInOut& dist, const VSFrame* src1, const VSFrame* src2, int width, int height, const ptrdiff_t stride, const BUTTERAUGLIData* const VS_RESTRICT d, const VSAPI* vsapi) noexcept {
-	jxl::Image3F tmp1(width, height);
-	jxl::Image3F tmp2(width, height);
-
-	for (int i = 0; i < 3; ++i) {
-		const float* srcp1{ reinterpret_cast<const float*>(vsapi->getReadPtr(src1, i)) };
-		const float* srcp2{ reinterpret_cast<const float*>(vsapi->getReadPtr(src2, i)) };
-
-		for (int y = 0; y < height; ++y) {
-			memcpy(tmp1.PlaneRow(i, y), srcp1, width * sizeof(float));
-			memcpy(tmp2.PlaneRow(i, y), srcp2, width * sizeof(float));
-
-			srcp1 += stride;
-			srcp2 += stride;
-		}
-	}
-
-	ref.SetFromImage(std::move(tmp1), (linput) ? jxl::ColorEncoding::LinearSRGB(false) : jxl::ColorEncoding::SRGB(false));
-	dist.SetFromImage(std::move(tmp2), (linput) ? jxl::ColorEncoding::LinearSRGB(false) : jxl::ColorEncoding::SRGB(false));
-}
 
 template <typename pixel_t, typename jxl_t, int peak>
-static void heatmap(VSFrame* dst, const jxl::ImageF& distmap, int width, int height, const ptrdiff_t stride, const BUTTERAUGLIData* const VS_RESTRICT d, const VSAPI* vsapi) noexcept {
+static void heatmap(VSFrame* dst, const jxl::ImageF& distmap, int width, int height, const ptrdiff_t stride, const VSAPI* vsapi) noexcept {
 	jxl::Image3F buff = jxl::CreateHeatMapImage(distmap, jxl::ButteraugliFuzzyInverse(1.5), jxl::ButteraugliFuzzyInverse(0.5));
 	jxl_t tmp(width, height);
 	jxl::Image3Convert(buff, peak, &tmp);
@@ -72,7 +32,7 @@ static void heatmap(VSFrame* dst, const jxl::ImageF& distmap, int width, int hei
 	}
 }
 
-static void heatmapF(VSFrame* dst, const jxl::ImageF& distmap, int width, int height, const ptrdiff_t stride, const BUTTERAUGLIData* const VS_RESTRICT d, const VSAPI* vsapi) noexcept {
+static void heatmapF(VSFrame* dst, const jxl::ImageF& distmap, int width, int height, const ptrdiff_t stride, const VSAPI* vsapi) noexcept {
 	jxl::Image3F buff = jxl::CreateHeatMapImage(distmap, jxl::ButteraugliFuzzyInverse(1.5), jxl::ButteraugliFuzzyInverse(0.5));
 
 	for (int i = 0; i < 3; i++) {
@@ -116,12 +76,12 @@ static const VSFrame* VS_CC butteraugliGetFrame(int n, int activationReason, voi
 			dist.metadata.m.color_encoding = jxl::ColorEncoding::SRGB(false);
 		}
 
-		d->fill(ref, dist, src, src2, width, height, stride, d, vsapi);
+		d->fill(ref, dist, src, src2, width, height, stride, vsapi);
 
 		if (d->distmap) {
 			VSFrame* dst = vsapi->newVideoFrame(vsapi->getVideoFrameFormat(src2), width, height, src2, core);
 			double diff_value = jxl::ButteraugliDistance(ref.Main(), dist.Main(), d->ba_params, jxl::GetJxlCms(), &diff_map, nullptr);
-			d->hmap(dst, diff_map, width, height, stride, d, vsapi);
+			d->hmap(dst, diff_map, width, height, stride, vsapi);
 			VSMap* dstProps = vsapi->getFramePropertiesRW(dst);
 			vsapi->mapSetFloat(dstProps, "_FrameButteraugli", diff_value, maReplace);
 

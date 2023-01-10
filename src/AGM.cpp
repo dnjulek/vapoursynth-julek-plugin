@@ -1,9 +1,9 @@
 #include "shared.h"
 
-template <typename pixel_t> extern void process_avx2(const VSFrame* src, VSFrame* dst, float& avg, const AGMData* const VS_RESTRICT d, const VSAPI* vsapi) noexcept;
+template <typename pixel_t> extern void agm_process_avx2(const VSFrame* src, VSFrame* dst, float& avg, const AGMData* const VS_RESTRICT d, const VSAPI* vsapi) noexcept;
 
 template <typename pixel_t>
-void process_c(const VSFrame* src, VSFrame* dst, float& avg, const AGMData* const VS_RESTRICT d, const VSAPI* vsapi) noexcept {
+void agm_process_c(const VSFrame* src, VSFrame* dst, float& avg, const AGMData* const VS_RESTRICT d, const VSAPI* vsapi) noexcept {
 	for (int plane{ 0 }; plane < d->vi->format.numPlanes; plane++) {
 		const auto width{ vsapi->getFrameWidth(src, plane) };
 		const auto height{ vsapi->getFrameHeight(src, plane) };
@@ -97,21 +97,21 @@ void VS_CC agmCreate(const VSMap* in, VSMap* out, void* userData, VSCore* core, 
 	vsapi->freeMap(ret);
 
 	if (d->vi->format.bytesPerSample == 1) {
-		d->process = process_c<uint8_t>;
+		d->process = agm_process_c<uint8_t>;
 #ifdef PLUGIN_X86
-		d->process = (instrset_detect() >= 8) ? process_avx2<uint8_t> : process_c<uint8_t>;
+		d->process = (instrset_detect() >= 8) ? agm_process_avx2<uint8_t> : agm_process_c<uint8_t>;
 #endif
 	}
 	else if (d->vi->format.bytesPerSample == 2) {
-		d->process = process_c<uint16_t>;
+		d->process = agm_process_c<uint16_t>;
 #ifdef PLUGIN_X86
-		d->process = (instrset_detect() >= 8) ? process_avx2<uint16_t> : process_c<uint16_t>;
+		d->process = (instrset_detect() >= 8) ? agm_process_avx2<uint16_t> : agm_process_c<uint16_t>;
 #endif
 	}
 	else {
-		d->process = process_c<float>;
+		d->process = agm_process_c<float>;
 #ifdef PLUGIN_X86
-		d->process = (instrset_detect() >= 8) ? process_avx2<float> : process_c<float>;
+		d->process = (instrset_detect() >= 8) ? agm_process_avx2<float> : agm_process_c<float>;
 #endif
 	}
 

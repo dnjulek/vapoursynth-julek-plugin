@@ -5,6 +5,7 @@ project(libjulek LANGUAGES CXX)
 add_library(julek SHARED
 	src/AGM.cpp
 	src/Butteraugli.cpp
+	src/ColorMap.cpp
 	src/RFS.cpp
 	src/shared.cpp
 	src/ssimulacra.cpp
