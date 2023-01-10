@@ -1,18 +1,18 @@
 #pragma once
 
+#include <VSHelper4.h>
+#include <VapourSynth4.h>
+
 #include <algorithm>
 #include <cmath>
 #include <memory>
 #include <vector>
-#include <VapourSynth4.h>
-#include <VSHelper4.h>
 
 #include "config.h"
-
 #include "lib/extras/codec.h"
 #include "lib/jxl/color_management.h"
-#include "lib/jxl/enc_color_management.h"
 #include "lib/jxl/enc_butteraugli_comparator.h"
+#include "lib/jxl/enc_color_management.h"
 #include "tools/ssimulacra.h"
 #include "tools/ssimulacra2.h"
 
@@ -34,10 +34,10 @@ extern void VS_CC ssimulacraCreate(const VSMap* in, VSMap* out, void* userData, 
 #endif
 
 struct AGMData final {
-	VSNode* node;
-	const VSVideoInfo* vi;
-	float luma_scaling;
-	float float_range[256];
-	int shift, peak;
-	void (*process)(const VSFrame* src, VSFrame* dst, float& avg, const AGMData* const VS_RESTRICT d, const VSAPI* vsapi) noexcept;
+    VSNode* node;
+    const VSVideoInfo* vi;
+    float luma_scaling;
+    float float_range[256];
+    int shift, peak;
+    void (*process)(const VSFrame* src, VSFrame* dst, float& avg, const AGMData* const VS_RESTRICT d, const VSAPI* vsapi) noexcept;
 };
