@@ -1,5 +1,5 @@
-msvc_project/x64
-msvc_project/.vs
 /build
 /thirdparty/libjxl_build
 .vscode
+.cache
+compile_commands.json

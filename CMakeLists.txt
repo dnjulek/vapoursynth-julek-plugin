@@ -4,6 +4,7 @@ project(libjulek LANGUAGES CXX)
 
 add_library(julek SHARED
 	src/AGM.cpp
+	src/AutoGain.cpp
 	src/Butteraugli.cpp
 	src/ColorMap.cpp
 	src/RFS.cpp
@@ -53,14 +54,17 @@ if((CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64") OR (CMAKE_SYSTEM_PROCESSOR MATCHES 
 	target_sources(julek PRIVATE
 		thirdparty/vectorclass/instrset_detect.cpp
 		src/AVX2/AGM_AVX2.cpp
+		src/AVX2/AutoGain_AVX2.cpp
 	)
-	
+
 	if(MSVC)
 		set_source_files_properties(src/AVX2/AGM_AVX2.cpp PROPERTIES COMPILE_OPTIONS "/arch:AVX2")
+		set_source_files_properties(src/AVX2/AutoGain_AVX2.cpp PROPERTIES COMPILE_OPTIONS "/arch:AVX2")
 	else()
 		set_source_files_properties(src/AVX2/AGM_AVX2.cpp PROPERTIES COMPILE_OPTIONS "-mavx2;-mfma")
+		set_source_files_properties(src/AVX2/AutoGain_AVX2.cpp PROPERTIES COMPILE_OPTIONS "-mavx2;-mfma")
 	endif()
-	
+
 else()
 	message(STATUS "julek: ${CMAKE_SYSTEM_PROCESSOR} processor detected, unable to use vectorclass")
 endif()
@@ -81,7 +85,11 @@ if(PKG_CONFIG_FOUND)
 endif()
 
 if(NOT VS_FOUND)
-	set(VS_INCLUDE_DIR "" CACHE PATH "Path to VapourSynth headers")
+	if(EXISTS "C:/Program Files/VapourSynth/sdk/include/vapoursynth")
+		set(VS_INCLUDE_DIR "C:/Program Files/VapourSynth/sdk/include/vapoursynth" CACHE PATH "Path to VapourSynth headers")
+	else()
+		set(VS_INCLUDE_DIR "" CACHE PATH "Path to VapourSynth headers")
+	endif()
 
 	if(VS_INCLUDE_DIR EQUAL "")
 		message(WARNING "VapourSynth not found")
