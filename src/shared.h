@@ -27,6 +27,7 @@ extern void VS_CC butteraugliCreate(const VSMap* in, VSMap* out, void* userData,
 extern void VS_CC colormapCreate(const VSMap* in, VSMap* out, void* userData, VSCore* core, const VSAPI* vsapi);
 extern void VS_CC rfsCreate(const VSMap* in, VSMap* out, void* userData, VSCore* core, const VSAPI* vsapi);
 extern void VS_CC ssimulacraCreate(const VSMap* in, VSMap* out, void* userData, VSCore* core, const VSAPI* vsapi);
+extern void VS_CC visualizediffsCreate(const VSMap* in, VSMap* out, void* userData, VSCore* core, const VSAPI* vsapi);
 
 #ifdef _MSC_VER
 #define FORCE_INLINE inline __forceinline

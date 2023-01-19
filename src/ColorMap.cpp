@@ -99,6 +99,41 @@ static const float* COLORMAP_G[] = {AUTUMN_G, BONE_G, JET_G, WINTER_G, RAINBOW_G
 static const float* COLORMAP_B[] = {AUTUMN_B, BONE_B, JET_B, WINTER_B, RAINBOW_B, OCEAN_B, SUMMER_B, SPRING_B, COOL_B, HSV_B, PINK_B, HOT_B, PARULA_B, MAGMA_B, INFERNO_B, PLASMA_B, VIRIDIS_B, CIVIDIS_B, TWILIGHT_B, TWILIGHTSHIFTED_B, TURBO_B, DEEPGREEN_B};
 static const int COLORMAP_LENGTH[] = {(int)(sizeof(AUTUMN_R) / sizeof(float)), (int)(sizeof(BONE_R) / sizeof(float)), (int)(sizeof(JET_R) / sizeof(float)), (int)(sizeof(WINTER_R) / sizeof(float)), (int)(sizeof(RAINBOW_R) / sizeof(float)), (int)(sizeof(OCEAN_R) / sizeof(float)), (int)(sizeof(SUMMER_R) / sizeof(float)), (int)(sizeof(SPRING_R) / sizeof(float)), (int)(sizeof(COOL_R) / sizeof(float)), (int)(sizeof(HSV_R) / sizeof(float)), (int)(sizeof(PINK_R) / sizeof(float)), (int)(sizeof(HOT_R) / sizeof(float)), (int)(sizeof(PARULA_R) / sizeof(float)), (int)(sizeof(MAGMA_R) / sizeof(float)), (int)(sizeof(INFERNO_R) / sizeof(float)), (int)(sizeof(PLASMA_R) / sizeof(float)), (int)(sizeof(VIRIDIS_R) / sizeof(float)), (int)(sizeof(CIVIDIS_R) / sizeof(float)), (int)(sizeof(TWILIGHT_R) / sizeof(float)), (int)(sizeof(TWILIGHTSHIFTED_R) / sizeof(float)), (int)(sizeof(TURBO_R) / sizeof(float)), (int)(sizeof(DEEPGREEN_R) / sizeof(float))};
 
+void colormap_process(const uint8_t* srcp, VSFrame* dst, const ptrdiff_t stride, const int w, const int h, int type, const VSAPI* vsapi) noexcept {
+    const float* tmp_r = COLORMAP_R[type];
+    const float* tmp_g = COLORMAP_G[type];
+    const float* tmp_b = COLORMAP_B[type];
+    const int tmp_len = COLORMAP_LENGTH[type];
+
+    uint8_t* dstp_r = vsapi->getWritePtr(dst, 0);
+    uint8_t* dstp_g = vsapi->getWritePtr(dst, 1);
+    uint8_t* dstp_b = vsapi->getWritePtr(dst, 2);
+
+    uint8_t uint8_r[256];
+    uint8_t uint8_g[256];
+    uint8_t uint8_b[256];
+
+    for (int i = 0; i < 256; i++) {
+        int j = tmp_len * i / 256;
+        uint8_r[i] = static_cast<uint8_t>(tmp_r[j] * 255 + 0.5f);
+        uint8_g[i] = static_cast<uint8_t>(tmp_g[j] * 255 + 0.5f);
+        uint8_b[i] = static_cast<uint8_t>(tmp_b[j] * 255 + 0.5f);
+    }
+
+    for (int y = 0; y < h; y++) {
+        for (int x = 0; x < w; x++) {
+            dstp_r[x] = uint8_r[srcp[x]];
+            dstp_g[x] = uint8_g[srcp[x]];
+            dstp_b[x] = uint8_b[srcp[x]];
+        }
+
+        srcp += stride;
+        dstp_r += stride;
+        dstp_g += stride;
+        dstp_b += stride;
+    }
+}
+
 static const VSFrame* VS_CC colormapGetFrame(int n, int activationReason, void* instanceData, void** frameData, VSFrameContext* frameCtx, VSCore* core, const VSAPI* vsapi) {
     auto* d = reinterpret_cast<COLORMAPData*>(instanceData);
 
@@ -106,46 +141,13 @@ static const VSFrame* VS_CC colormapGetFrame(int n, int activationReason, void* 
         vsapi->requestFrameFilter(n, d->node, frameCtx);
     } else if (activationReason == arAllFramesReady) {
         const VSFrame* src = vsapi->getFrameFilter(n, d->node, frameCtx);
-
-        const int h = vsapi->getFrameHeight(src, 0);
-        const int w = vsapi->getFrameWidth(src, 0);
-        VSFrame* dst = vsapi->newVideoFrame(&d->vi.format, w, h, src, core);
-
+        const int height = vsapi->getFrameHeight(src, 0);
+        const int width = vsapi->getFrameWidth(src, 0);
         const ptrdiff_t stride = vsapi->getStride(src, 0);
+        VSFrame* dst = vsapi->newVideoFrame(&d->vi.format, width, height, src, core);
         const uint8_t* srcp = vsapi->getReadPtr(src, 0);
 
-        const float* tmp_r = COLORMAP_R[d->type];
-        const float* tmp_g = COLORMAP_G[d->type];
-        const float* tmp_b = COLORMAP_B[d->type];
-        const int tmp_len = COLORMAP_LENGTH[d->type];
-
-        uint8_t* dstp_r = vsapi->getWritePtr(dst, 0);
-        uint8_t* dstp_g = vsapi->getWritePtr(dst, 1);
-        uint8_t* dstp_b = vsapi->getWritePtr(dst, 2);
-
-        uint8_t uint8_r[256];
-        uint8_t uint8_g[256];
-        uint8_t uint8_b[256];
-
-        for (int i = 0; i < 256; i++) {
-            int j = tmp_len * i / 256;
-            uint8_r[i] = static_cast<uint8_t>(tmp_r[j] * 255 + 0.5f);
-            uint8_g[i] = static_cast<uint8_t>(tmp_g[j] * 255 + 0.5f);
-            uint8_b[i] = static_cast<uint8_t>(tmp_b[j] * 255 + 0.5f);
-        }
-
-        for (int y = 0; y < h; y++) {
-            for (int x = 0; x < w; x++) {
-                dstp_r[x] = uint8_r[srcp[x]];
-                dstp_g[x] = uint8_g[srcp[x]];
-                dstp_b[x] = uint8_b[srcp[x]];
-            }
-
-            srcp += stride;
-            dstp_r += stride;
-            dstp_g += stride;
-            dstp_b += stride;
-        }
+        colormap_process(srcp, dst, stride, width, height, d->type, vsapi);
 
         vsapi->freeFrame(src);
         VSMap* dstProps = vsapi->getFramePropertiesRW(dst);

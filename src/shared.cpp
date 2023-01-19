@@ -9,6 +9,7 @@ VapourSynthPluginInit2(VSPlugin* plugin, const VSPLUGINAPI* vspapi) {
     vspapi->registerFunction("ColorMap", "clip:vnode;type:int:opt;", "clip:vnode;", colormapCreate, nullptr, plugin);
     vspapi->registerFunction("RFS", "clip_a:vnode;clip_b:vnode;frames:int[];mismatch:int:opt;", "clip:vnode;", rfsCreate, nullptr, plugin);
     vspapi->registerFunction("SSIMULACRA", "reference:vnode;distorted:vnode;feature:int:opt;simple:int:opt;", "clip:vnode;", ssimulacraCreate, nullptr, plugin);
+    vspapi->registerFunction("VisualizeDiffs", "clip_a:vnode;clip_b:vnode;auto_gain:int:opt;type:int:opt;", "clip:vnode;", visualizediffsCreate, nullptr, plugin);
 }
 
 template <typename pixel_t, typename jxl_t, bool linput>

@@ -10,6 +10,7 @@ add_library(julek SHARED
 	src/RFS.cpp
 	src/shared.cpp
 	src/ssimulacra.cpp
+	src/VisualizeDiffs.cpp
 	thirdparty/libjxl/tools/ssimulacra.cc
 	thirdparty/libjxl/tools/ssimulacra2.cc
 )
