@@ -34,7 +34,6 @@ static const VSFrame* VS_CC visualizediffsGetFrame(int n, int activationReason, 
             const ptrdiff_t stride = vsapi->getStride(src1, plane);
             const uint8_t* src1p = vsapi->getReadPtr(src1, plane);
             const uint8_t* src2p = vsapi->getReadPtr(src2, plane);
-            uint8_t* dstp = vsapi->getWritePtr(dst, plane);
 
             if (plane == 0) {
                 for (int y{0}; y < height; y++) {
@@ -48,7 +47,7 @@ static const VSFrame* VS_CC visualizediffsGetFrame(int n, int activationReason, 
             } else {
                 for (int y{0}; y < height; y++) {
                     for (int x{0}; x < width; x++) {
-                        tmpp2[x] = tmpp2[x] + std::abs(src1p[x] - src2p[x]);
+                        tmpp2[x] += std::abs(src1p[x] - src2p[x]);
                     }
                     src1p += stride;
                     src2p += stride;

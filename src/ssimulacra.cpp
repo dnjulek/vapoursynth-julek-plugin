@@ -47,8 +47,8 @@ static const VSFrame* VS_CC ssimulacraGetFrame(int n, int activationReason, void
         }
 
         if (d->feature) {
-            ref.TransformTo(jxl::ColorEncoding::LinearSRGB(false), jxl::GetJxlCms());
-            dist.TransformTo(jxl::ColorEncoding::LinearSRGB(false), jxl::GetJxlCms());
+            JXL_CHECK(ref.TransformTo(jxl::ColorEncoding::LinearSRGB(false), jxl::GetJxlCms()));
+            JXL_CHECK(dist.TransformTo(jxl::ColorEncoding::LinearSRGB(false), jxl::GetJxlCms()));
             ssimulacra::Ssimulacra ssimulacra_{ssimulacra::ComputeDiff(*ref.Main().color(), *dist.Main().color(), d->simple)};
             vsapi->mapSetFloat(dstProps, "_SSIMULACRA", ssimulacra_.Score(), maReplace);
         }
