@@ -48,7 +48,7 @@ target_link_libraries(julek PRIVATE
 	${libhwy}
 )
 
-if((CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64") OR (CMAKE_SYSTEM_PROCESSOR MATCHES "AMD64"))
+if((CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64") OR(CMAKE_SYSTEM_PROCESSOR MATCHES "AMD64"))
 	message(STATUS "julek: ${CMAKE_SYSTEM_PROCESSOR} processor detected, using vectorclass")
 	target_compile_definitions(julek PRIVATE PLUGIN_X86)
 	target_include_directories(julek PRIVATE thirdparty/vectorclass)
@@ -102,12 +102,14 @@ if(NOT VS_FOUND)
 endif()
 
 find_package(Git QUIET)
+
 if(GIT_FOUND)
 	execute_process(
 		COMMAND ${GIT_EXECUTABLE} describe --tags --long --always
 		WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
 		OUTPUT_VARIABLE VCS_TAG
 	)
+
 	if(VCS_TAG)
 		string(STRIP ${VCS_TAG} VCS_TAG)
 	endif()
